@@ -2,19 +2,20 @@ import numpy as np
 
 # CONSTANTS, can be varied. Oh, the irony!
 np.random.seed(123456789)
-d_input = 401
-d_transform = 20000
-lamda = 0.0000001
+d_input = 400
+d_transform = 100
+lamda = 0.0001
 
 # RFF matrices
-W = np.random.randn(d_input, d_transform) # TODO Check uniqueness? 
+# W = np.random.randn(d_input, d_transform) # TODO Check uniqueness? 
+W = np.random.standard_cauchy((d_input, d_transform))
 b = np.random.uniform(0, 2*np.pi, (1,d_transform)) # TODO Check uniqueness? 
 
 def transform(X):
 	value_batch_size = len(X)
-	bias = np.ones((value_batch_size, 1))
-	X = np.hstack((X, bias)) # append the bias at the very end
-	X = 10*np.sqrt(2.0 / d_transform)*np.cos(np.dot(X, W) + b)
+	# bias = np.ones((value_batch_size, 1))
+	# X = np.hstack((X, bias)) # append the bias at the very end
+	X = np.sqrt(2.0 / d_transform)*np.cos(np.dot(X, W) + b)
 	return X
 
 def fit(x, y, update, lamda): # TODO Maybe introduce minibatches?
@@ -32,8 +33,8 @@ def mapper(key, value):
 	x = value[:, 1:]
 	y = value[:, 0] 
 	x = transform(x)
-	# update = np.random.randn(1, d_transform) 	
-	update = np.zeros((1, d_transform))
+	update = np.random.randn(1, d_transform) 	
+	# update = np.zeros((1, d_transform))
 	update = fit(x, y, update, lamda)
 	yield "", update
 
