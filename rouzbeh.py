@@ -31,9 +31,8 @@ def fit(x, y, update, lamda):
 	return update
 
 def minibatch_fit(x, y, update, lamda):
-	print "in minibatch"
 	for i in range(num_mini_batch):
-		alpha = 1.0 / (lamda*(i+1))
+		# alpha = 1.0 / (lamda*(i+1))
 		samples = np.random.choice(x.shape[0], mini_batch_size, replace=False)
 		x_minibatch = x[samples, :]
 		y_minibatch = y[samples]
@@ -44,7 +43,7 @@ def minibatch_fit(x, y, update, lamda):
 				temp_update += (1.0 / mini_batch_size)*((1 - alpha*lamda)*update + alpha*y_minibatch[j]*x_minibatch[j])
 			else:
 				temp_update += (1.0 / mini_batch_size)*(1 - alpha*lamda)*update
-		update += temp_update
+		update += (1.0 / num_mini_batch)*temp_update
 	return update
 
 def mapper(key, value):
