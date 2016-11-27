@@ -21,13 +21,30 @@ def transform(X):
 	X = np.hstack((X, bias)) # append the bias at the very end
 	return X
 
-def fit(x, y, update, lamda): # TODO Maybe introduce minibatches?
-	for i in range(len(x)): # Iterate through the data points
-		alpha = 1.0/(lamda * (i+1)) # TODO Find another strategy to update alpha?
+def fit(x, y, update, lamda): 
+	for i in range(len(x)): 
+		alpha = 1.0/(lamda * (i+1)) 
 		if y[i] * np.dot(x[i], update.T) < 1:
 			update = (1 - alpha*lamda)*update + alpha*y[i]*x[i]
 		else:
 			update = (1 - alpha*lamda)*update
+	return update
+
+def minibatch_fit(x, y, update, lamda):
+	print "in minibatch"
+	for i in range(num_mini_batch):
+		alpha = 1.0 / (lamda*(i+1))
+		samples = np.random.choice(x.shape[0], mini_batch_size, replace=False)
+		x_minibatch = x[samples, :]
+		y_minibatch = y[samples]
+		temp_update = np.zeros(update.shape)
+		for j in range(mini_batch_size):
+			alpha = 1.0/(lamda * (j+1))
+			if y_minibatch[j] * np.dot(x_minibatch[j], update.T) < 1:
+				temp_update += (1.0 / mini_batch_size)*((1 - alpha*lamda)*update + alpha*y_minibatch[j]*x_minibatch[j])
+			else:
+				temp_update += (1.0 / mini_batch_size)*(1 - alpha*lamda)*update
+		update += temp_update
 	return update
 
 def mapper(key, value):
@@ -38,8 +55,10 @@ def mapper(key, value):
 	x = transform(x)
 	# update = np.random.randn(1, d_transform + 1)
 	# update = np.asarray(update, dtype = np.float32) 	
-	update = np.zeros((1, d_transform+1), dtype=np.float32)
-	update = fit(x, y, update, lamda)
+	# update = np.zeros((1, d_transform+1), dtype=np.float32)
+	update = np.zeros((1, d_transform+1))
+	# update = fit(x, y, update, lamda)
+	update = minibatch_fit(x, y, update, lamda)
 	yield "", update
 
 def reducer(key, value):
