@@ -1,20 +1,21 @@
 import numpy as np
 
 # CONSTANTS, can be varied. Oh, the irony!
-np.random.seed(123456789)
 d_input = 401
-d_transform = 500
-num_mini_batch = 1000
-mini_batch_size = 500
+d_transform = 2500
+num_mini_batch = 10000
+mini_batch_size = 100
 # lamda = 0.00000000000000000000000000000000000000000000000000000000001
 # lamda = 0.00000000000000000000000000000000000000000000001
 lamda = 0.0000000000000000000000000000000000000001
+# lamda = 0.000000100000000000000000000000000000001
 
 # RFF matrices
-W = np.asarray(np.random.standard_cauchy((d_input-1, d_transform)), dtype = np.float32) # TODO Check uniqueness?
-b = np.asarray(np.random.uniform(0, 2*np.pi, (1,d_transform)), dtype = np.float32) # TODO Check uniqueness? 
 
 def transform(X):
+	np.random.seed(123456789)
+	W = np.asarray(np.random.standard_cauchy((d_input-1, d_transform)), dtype = np.float32) # TODO Check uniqueness?
+	b = np.asarray(np.random.uniform(0, 2*np.pi, (1,d_transform)), dtype = np.float32) # TODO Check uniqueness? 
 	value_batch_size = len(X)
 	X =10* np.sqrt(2.0 / d_transform)*np.cos(np.dot(X, W) + b)
 	bias = np.ones((value_batch_size, 1), dtype = np.float32)
